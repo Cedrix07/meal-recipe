@@ -7,11 +7,13 @@ import { useStore } from 'vuex';
 const query = ref('');
 const store = useStore();
 const route = useRoute();
+const router = useRouter();
+
 const meals = computed(()=> store.getters['meals/getMeals']);
 const isLoading = computed(()=> store.getters['meals/isLoading']);
 const error = computed(()=> store.getters['meals/error']); 
+const searchQuery = computed(() => store.getters['meals/getSearchQuery']);
 
-const favorites = computed(() => store.getters['favorites/getFavorites']);
 const fetchMeal = debounce((q) => {
   store.dispatch('meals/fetchMealByName', q);
 }, 500);
@@ -21,15 +23,26 @@ const addToFavorites = (meal) => {
 }
 
 watch(query, (q) => {
-  fetchMeal(q);
+  if (q.trim() === searchQuery.value) {
+    return; // Skip if query hasn't changed
+  }
+  if (!q.trim()) {
+    store.dispatch('meals/fetchRandomMeals');
+    router.push({ name: 'home', params: { query: '' } }); // Clear URL query
+  } else {
+    fetchMeal(q);
+    router.push({ name: 'home', params: { query: q } }); // Update URL with query
+  }
 });
 
 onMounted(() => {
-  query.value = route.params.query || '';
-  if(query.value){
+  query.value = route.params.query || searchQuery.value || '';
+  if (query.value && (query.value !== searchQuery.value || !meals.value.length)) {
     fetchMeal(query.value);
-  } 
-})
+  } else if (!query.value && !meals.value.length) {
+    store.dispatch('meals/fetchRandomMeals');
+  }
+});
 </script>
 
 <template>
@@ -43,7 +56,7 @@ onMounted(() => {
       <p v-if="isLoading">Fetching Meals...</p>
       <div v-else-if="meals.length" v-for="meal in meals" :key="meal.idMeal" class="border shadow rounded-md">
         <RouterLink :to="{ name: 'mealDetail', params: { id: meal.idMeal } }">
-          <img :src="meal.strMealThumb" :alt="meal.strMeal" class="w-full h-48 object-cover mb-2">
+          <img :src="meal.strMealThumb" loading="lazy" :alt="meal.strMeal" class="w-full h-48 object-cover mb-2 rounded-t-md">
         </RouterLink>
         <div class="pb-2">
           <h3 class="text-center font-bold mb-3">{{ meal.strMeal }}</h3>
@@ -54,6 +67,9 @@ onMounted(() => {
               Video</a>
           </div>
         </div>
+      </div>
+      <div v-else>
+        <p>No meals found</p>
       </div>
     </div>
   </main>
