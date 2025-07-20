@@ -32,6 +32,9 @@ export default{
                     fav.strMeal.toLowerCase().includes(query.toLowerCase())
                 );
             }
+        },
+        IS_FAVORITE(state, idMeal){
+            return state.favorites.some(fav => fav.idMeal === idMeal);
         }
     },
     actions: { 

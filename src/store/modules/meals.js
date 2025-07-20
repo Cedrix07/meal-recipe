@@ -29,7 +29,7 @@ export default{
             commit('SET_SEARCH_QUERY', '');
             try {
                 // Fetch 8 random meals in parallel
-                const requests = Array.from({ length: 8 }, () =>
+                const requests = Array.from({ length: 9 }, () =>
                     apiClient.get('random.php')
                 );
                 const responses = await Promise.all(requests);
