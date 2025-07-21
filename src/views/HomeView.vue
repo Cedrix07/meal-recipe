@@ -2,34 +2,34 @@
 import { debounce } from '@/utils/helper';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useToast } from 'vue-toastification';
 import { useStore } from 'vuex';
 
 const query = ref('');
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
+const toast = useToast();
 
 const meals = computed(()=> store.getters['meals/getMeals']);
 const isLoading = computed(()=> store.getters['meals/isLoading']);
 const error = computed(()=> store.getters['meals/error']); 
 const searchQuery = computed(() => store.getters['meals/getSearchQuery']);
-const favorites = computed(() => store.getters['favorites/getFavorites']);
+
 
 const fetchMeal = debounce((q) => {
   store.dispatch('meals/fetchMealByName', q);
 }, 500);
 
 const toggleFavorite = (meal) => {
-  if (isFavorite(meal.idMeal)) {
+  if (store.getters['favorites/isFavorite'](meal.idMeal)) {
     store.commit('favorites/REMOVE_FROM_FAVORITES', meal.idMeal);
+    toast.error(`${meal.strMeal} removed from favorites`, { timeout: 2000 });
   }else{
     store.commit('favorites/ADD_TO_FAVORITES', meal);
+    toast.success(`${meal.strMeal} added to favorites`, { timeout: 2000 });
   }
 }
-
-const isFavorite = (mealId) => {
-  return favorites.value.some((fav) => fav.idMeal === mealId);
-};
 
 watch(query, (q) => {
   if (q.trim() === searchQuery.value) {
@@ -37,10 +37,12 @@ watch(query, (q) => {
   }
   if (!q.trim()) {
     store.dispatch('meals/fetchRandomMeals');
-    router.push({ name: 'home', params: { query: '' } }); // Clear URL query
+    // Clear URL query
+    router.push({ name: 'home', params: { query: '' } }); 
   } else {
     fetchMeal(q);
-    router.push({ name: 'home', params: { query: q } }); // Update URL with query
+    // Update URL with query
+    router.push({ name: 'home', params: { query: q } });
   }
 });
 
@@ -56,7 +58,7 @@ onMounted(() => {
 
 <template>
   <main class="p-8">
-    <div class="mb-4">
+    <div class="mb-4 border p-3">
       <input type="text" placeholder="Seach meal by name..."
         class="w-full p-2 border border-orange-600 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600"
         v-model="query">
@@ -73,7 +75,9 @@ onMounted(() => {
           <h3 class="text-center font-bold mx-auto text-sm md:text-md">{{ meal.strMeal }}</h3>
           <button class="px-2 py-1 rounded-md "
             @click="toggleFavorite(meal)">
-            <i :class="['pi', isFavorite(meal.idMeal) ? 'pi-heart-fill' : 'pi-heart', 'text-orange-600']"></i>
+            <i 
+              :class="['pi', store.getters['favorites/isFavorite'](meal.idMeal) ? 'pi-heart-fill' : 'pi-heart', 'text-orange-600']"
+              ></i>
           </button>
         </div>
       </div>

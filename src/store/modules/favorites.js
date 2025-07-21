@@ -33,9 +33,6 @@ export default{
                 );
             }
         },
-        IS_FAVORITE(state, idMeal){
-            return state.favorites.some(fav => fav.idMeal === idMeal);
-        }
     },
     actions: { 
     },
@@ -45,6 +42,9 @@ export default{
         },
         totalFavorites(state){
             return state.favorites.length;
+        },
+        isFavorite: (state) => (mealId) => {
+            return state.favorites.some((fav) => fav.idMeal === mealId);
         },
     }
 }
