@@ -28,12 +28,12 @@ watch(query, (q) => {
    <main class="p-8">
     <div class="mb-4">
       <input type="text" placeholder="Search your favorite meal..."
-        class="w-full p-2 border border-orange-600 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600"
+        class="w-full p-2 search-bar"
         v-model="query">
     </div>
     <h4 class="font-bold mb-4">Your Favorites</h4>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-        <div v-if="favorites.length" v-for="favorite in favorites" :key="favorites.idMeal" class="shadow rounded-md ">
+    <div v-if="favorites.length" class="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div v-for="favorite in favorites" :key="favorites.idMeal" class="card">
             <RouterLink :to="{ name: 'mealDetail', params: { id: favorite.idMeal } }">
             <img :src="favorite.strMealThumb" :alt="favorite.strMeal" class="w-full h-48 object-cover rounded-t-md">
             </RouterLink>
@@ -46,9 +46,9 @@ watch(query, (q) => {
                 </div>
             </div>
         </div>
-        <div v-else>
-            <h5>You don't have any favorite yet</h5>
-        </div>
+    </div>
+    <div v-else>
+        <h2 class="text-lg text-gray-500 font-bold text-center">No Meal found.</h2>
     </div>
   </main>
 </template>

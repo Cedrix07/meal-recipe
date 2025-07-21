@@ -1,25 +1,11 @@
 <script setup>
 import apiClient from '@/api/axios';
-import { computed, onMounted, ref } from 'vue';
+import ToggleFavorite from '@/components/ToggleFavorite.vue';
+import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { useToast } from 'vue-toastification';
-import { useStore } from 'vuex';
-
 
 const route = useRoute();
-const store = useStore();
 const meal = ref({});
-const toast = useToast();
-
-const toggleFavorite = (value) => {
-    if (store.getters['favorites/isFavorite'](value.idMeal)) {
-        store.commit('favorites/REMOVE_FROM_FAVORITES', value.idMeal);
-        toast.error(`${value.strMeal} removed from favorites`, { timeout: 2000 });
-    } else {
-        store.commit('favorites/ADD_TO_FAVORITES', value);
-        toast.success(`${value.strMeal} added to favorites`, { timeout: 2000 });
-    }
-}
 
 const ingredients = ref([]);
 let isLoading = ref(true);
@@ -42,16 +28,15 @@ const fetchMealById = async () => {
 onMounted(() => {
     fetchMealById();
 });
-
 </script>
 <template>
     <main class="p-8">
         <div v-if="isLoading" class="flex items-center justify-center w-full">
             <i class="pi pi-spin pi-spinner text-orange-600" style="font-size: 2rem"></i>
         </div>
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3 shadow-lg">
-            <div class="">
-                <img class="w-full h-full object-cover" loading="lazy" :src="meal.strMealThumb"
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3 shadow-lg card">
+            <div class="rounded-md">
+                <img class="w-full h-full object-cover rounded-s-md" loading="lazy" :src="meal.strMealThumb"
                     :alt="meal.strMeal">
             </div>
             <div class="p-3">
@@ -60,14 +45,7 @@ onMounted(() => {
                         <h3 class="text-xl font-bold">{{ meal.strMeal }}</h3>
                         <a :href="meal.strYoutube" target="_blank" class="mt-1 text-xl" title="Watch video" data-tooltip><i class="pi pi-youtube text-red-600"></i></a>
                     </div>
-                    <button class="px-2 py-1 rounded-md" @click="toggleFavorite(meal)">
-                        <i 
-                            :class="['pi', store.getters['favorites/isFavorite'](meal.idMeal) ? 'pi-heart-fill' : 'pi-heart', 'text-orange-600']"
-                            :title="store.getters['favorites/isFavorite'](meal.idMeal) ? 'Remove from favorites' : 'Add to favorites'"
-                            data-tooltip
-                            >
-                        </i>
-                    </button>
+                    <ToggleFavorite :meal="meal"/>
                 </div>
                 <div class="my-3">
                     <p class="font-semibold">Ingredients: </p>

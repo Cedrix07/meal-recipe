@@ -1,4 +1,6 @@
 <script setup>
+import Dropdown from '@/components/Dropdown.vue';
+import ToggleFavorite from '@/components/ToggleFavorite.vue';
 import { debounce } from '@/utils/helper';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -15,7 +17,6 @@ const meals = computed(()=> store.getters['meals/getMeals']);
 const isLoading = computed(()=> store.getters['meals/isLoading']);
 const error = computed(()=> store.getters['meals/error']); 
 const searchQuery = computed(() => store.getters['meals/getSearchQuery']);
-
 
 const fetchMeal = debounce((q) => {
   store.dispatch('meals/fetchMealByName', q);
@@ -54,31 +55,27 @@ onMounted(() => {
     store.dispatch('meals/fetchRandomMeals');
   }
 });
+
 </script>
 
 <template>
   <main class="p-8">
-    <div class="mb-4 border p-3">
+    <div class="w-full mb-4 flex justify-between items-center gap-2">
       <input type="text" placeholder="Seach meal by name..."
-        class="w-full p-2 border border-orange-600 rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600"
-        v-model="query">
+        class="p-2 w-full search-bar" v-model="query">
+      <Dropdown />
     </div>
     <div v-if="isLoading" class="flex items-center justify-center w-full">
       <i class="pi pi-spin pi-spinner text-orange-600" style="font-size: 2rem"></i>
     </div>
     <div v-else-if="meals.length" class="grid grid-cols-1 md:grid-cols-3 gap-2">
-      <div v-for="meal in meals" :key="meal.idMeal" class="border shadow rounded-md">
+      <div v-for="meal in meals" :key="meal.idMeal" class="card">
         <RouterLink :to="{ name: 'mealDetail', params: { id: meal.idMeal } }">
           <img :src="meal.strMealThumb" loading="lazy" :alt="meal.strMeal" class="w-full h-48 object-cover mb-2 rounded-t-md">
         </RouterLink>
         <div class="my-3 flex items-center justify-between">
           <h3 class="text-center font-bold mx-auto text-sm md:text-md">{{ meal.strMeal }}</h3>
-          <button class="px-2 py-1 rounded-md "
-            @click="toggleFavorite(meal)">
-            <i 
-              :class="['pi', store.getters['favorites/isFavorite'](meal.idMeal) ? 'pi-heart-fill' : 'pi-heart', 'text-orange-600']"
-              ></i>
-          </button>
+          <ToggleFavorite :meal="meal" />
         </div>
       </div>
     </div>

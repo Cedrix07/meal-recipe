@@ -4,6 +4,7 @@ export default{
     namespaced: true,
     state: () => ({
         meals: [],
+        categories: [],
         isLoading: false,
         error: null,
         searchQuery: '', // Add this to store the search query
@@ -11,6 +12,9 @@ export default{
     mutations: {
         SET_MEALS(state, meals){
             state.meals = meals
+        },
+        SET_CATEGORIES(state, categories){
+            state.categories = categories
         },
         SET_LOADING(state, isLoading){
             state.isLoading = isLoading
@@ -60,15 +64,29 @@ export default{
             }catch(error){
                 console.error('Error Fetching Meals', error);
                 commit('SET_ERROR', 'Failed to fetch meals'); 
-                commit('SET_MEALS', []);    commit('SET_SEARCH_QUERY', query); // Store the search query
+                commit('SET_MEALS', []);    
+                commit('SET_SEARCH_QUERY', query); // Store the search query
             }finally{
                 commit('SET_LOADING', false);
+            }
+        },
+        async fetchCategory({commit}){
+            try{
+                const { data } = await apiClient.get('categories.php');
+                console.log(data);
+                commit('SET_CATEGORIES', data.categories || []);
+            }catch(error){
+                console.error('Error Fetching Categories', error);
+                commit('SET_CATEGORIES', []);
             }
         }
     },
     getters: {
         getMeals(state){
             return state.meals
+        },
+        getCategories(state){
+            return state.categories
         },
         isLoading(state){
             return state.isLoading

@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body{
+    @apply bg-gray-200;
+}
+
+.card{
+    @apply bg-white border shadow rounded-md;
+}
+
+.search-bar{
+    @apply bg-gray-100 border-0 shadow-sm rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600;
+}
