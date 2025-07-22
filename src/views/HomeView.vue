@@ -1,17 +1,15 @@
 <script setup>
-import Dropdown from '@/components/Dropdown.vue';
+import ComboBox from '@/components/ComboBox.vue';
 import ToggleFavorite from '@/components/ToggleFavorite.vue';
 import { debounce } from '@/utils/helper';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useToast } from 'vue-toastification';
 import { useStore } from 'vuex';
 
 const query = ref('');
 const store = useStore();
 const route = useRoute();
 const router = useRouter();
-const toast = useToast();
 
 const meals = computed(()=> store.getters['meals/getMeals']);
 const isLoading = computed(()=> store.getters['meals/isLoading']);
@@ -22,15 +20,6 @@ const fetchMeal = debounce((q) => {
   store.dispatch('meals/fetchMealByName', q);
 }, 500);
 
-const toggleFavorite = (meal) => {
-  if (store.getters['favorites/isFavorite'](meal.idMeal)) {
-    store.commit('favorites/REMOVE_FROM_FAVORITES', meal.idMeal);
-    toast.error(`${meal.strMeal} removed from favorites`, { timeout: 2000 });
-  }else{
-    store.commit('favorites/ADD_TO_FAVORITES', meal);
-    toast.success(`${meal.strMeal} added to favorites`, { timeout: 2000 });
-  }
-}
 
 watch(query, (q) => {
   if (q.trim() === searchQuery.value) {
@@ -60,15 +49,20 @@ onMounted(() => {
 
 <template>
   <main class="p-8">
-    <div class="w-full mb-4 flex justify-between items-center gap-2">
-      <input type="text" placeholder="Seach meal by name..."
-        class="p-2 w-full search-bar" v-model="query">
-      <Dropdown />
-    </div>
+     <div class="w-full mb-4 mx-auto bg-gray-50 shadow rounded-lg px-3 py-5 flex gap-2">
+        <div class="flex-1">
+            <input type="text" placeholder="Search a meal..."
+                class="w-full p-2 search-bar"
+                v-model="query">
+        </div>
+        <div>
+            <ComboBox />
+        </div>
+      </div>
     <div v-if="isLoading" class="flex items-center justify-center w-full">
       <i class="pi pi-spin pi-spinner text-orange-600" style="font-size: 2rem"></i>
     </div>
-    <div v-else-if="meals.length" class="grid grid-cols-1 md:grid-cols-3 gap-2">
+    <div v-else-if="meals.length" class="grid grid-cols-1 md:grid-cols-3 gap-2 bg-white px-3 py-5 rounded-lg">
       <div v-for="meal in meals" :key="meal.idMeal" class="card">
         <RouterLink :to="{ name: 'mealDetail', params: { id: meal.idMeal } }">
           <img :src="meal.strMealThumb" loading="lazy" :alt="meal.strMeal" class="w-full h-48 object-cover mb-2 rounded-t-md">

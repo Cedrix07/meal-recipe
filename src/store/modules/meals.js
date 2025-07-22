@@ -73,7 +73,6 @@ export default{
         async fetchCategory({commit}){
             try{
                 const { data } = await apiClient.get('categories.php');
-                console.log(data);
                 commit('SET_CATEGORIES', data.categories || []);
             }catch(error){
                 console.error('Error Fetching Categories', error);

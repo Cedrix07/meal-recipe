@@ -11,5 +11,5 @@ body{
 }
 
 .search-bar{
-    @apply bg-gray-100 border-0 shadow-sm rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600;
+    @apply bg-white border shadow-sm rounded-md focus:outline-none focus:ring-1 focus:ring-orange-600;
 }
