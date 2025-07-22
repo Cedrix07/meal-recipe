@@ -1,7 +1,7 @@
 # Meal Recipe Finder
 A Vue.js project built for practicing frontend skills. This app allows users to search for meal recipes using a public API.
 
-  Features:
+  ### Features:
     - Search meals by keyword
     - Add meals to Favorites
     - View meal details (ingredients and instructions)
