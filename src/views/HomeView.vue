@@ -1,5 +1,4 @@
 <script setup>
-import ComboBox from '@/components/ComboBox.vue';
 import ToggleFavorite from '@/components/ToggleFavorite.vue';
 import { debounce } from '@/utils/helper';
 import { computed, onMounted, ref, watch } from 'vue';
@@ -54,9 +53,6 @@ onMounted(() => {
             <input type="text" placeholder="Search a meal..."
                 class="w-full p-2 search-bar"
                 v-model="query">
-        </div>
-        <div>
-            <ComboBox />
         </div>
       </div>
     <div v-if="isLoading" class="flex items-center justify-center w-full">

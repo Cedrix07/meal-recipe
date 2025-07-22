@@ -1,5 +1,4 @@
 <script setup>
-import ComboBox from '@/components/ComboBox.vue';
 import { computed, ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useStore } from 'vuex';
@@ -32,9 +31,6 @@ watch(query, (q) => {
                 <input type="text" placeholder="Search your favorite meal..."
                     class="w-full p-2 search-bar"
                     v-model="query">
-            </div>
-            <div>
-                <ComboBox />
             </div>
         </div>
         <section class="bg-gray-50 shadow flex-1 rounded-lg px-3 py-5">
